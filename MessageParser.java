@@ -1,3 +1,5 @@
+package homework;
+
 import java.util.*;
 import java.lang.*;
 import java.io.*;
@@ -41,7 +43,9 @@ public class MessageParser {
       GetIdentification(); // Gets Password and Cookie from 'passwd.dat' file
    }
 
-   public MessageParser(String ident, String password) {
+  
+
+public MessageParser(String ident, String password) {
       filename = ident+".dat";
       PASSWORD = password;
       IDENT = ident;
@@ -102,12 +106,31 @@ public class MessageParser {
   
    public boolean Login() { 
       boolean success = false;
+	  int i=0;
+	  String monitor_message = "";
+	  String[] credentials = null;
+	  
+	  if (CType == 1 && Identification()){
+	  	credentials = new String[]{"IDENT","ALIVE","QUIT"};
       try {  
-
+    	  for(String s: credentials){
+		  if(Execute(s)){
+		  	monitor_message = GetMonitorMessage();
+		  	System.out.println(monitor_message);
+		  	if(i++ == (credentials.length-1)){
+				success = true;
+		  	}
+		  	}
+		  }
       } catch (NullPointerException n) {
          System.out.println("MessageParser [Login]: null pointer error "+
 			    "at login:\n\t"+n);
          success = false;
+			}
+		 }
+		 else{
+		 System.out.println("Message parser login error");
+		 System.exit(1);
       }
 
       System.out.println("Success Value Login = "+success);
@@ -135,31 +158,31 @@ public class MessageParser {
    }
 
    //Handle Directives and Execute appropriate commands
-   public boolean Execute (String sentmessage) {
+   public boolean Execute(String sentmessage) {
       boolean success = false; 
       try {
          if (sentmessage.trim().equals("IDENT")) {
             sentmessage = sentmessage.concat(" ");
             sentmessage = sentmessage.concat(IDENT);
-            SendIt (sentmessage);
+            SendIt(sentmessage);
 
             success = true;
          } else if (sentmessage.trim().equals("PASSWORD")) {
             sentmessage = sentmessage.concat(" ");
             sentmessage = sentmessage.concat(PASSWORD);
-            SendIt (sentmessage.trim());
+            SendIt(sentmessage.trim());
             success = true;  
          } else if (sentmessage.trim().equals("HOST_PORT")) {
             sentmessage = sentmessage.concat(" ");
-            sentmessage = sentmessage.concat(HOSTNAME);//hostname
+            sentmessage = sentmessage.concat(HOSTNAME);		//hostname
             sentmessage = sentmessage.concat(" ");
             sentmessage = sentmessage.concat(String.valueOf(HOST_PORT));
-            SendIt (sentmessage);
+            SendIt(sentmessage);
             success = true;                                  
          } else if (sentmessage.trim().equals("ALIVE")) {
 	    sentmessage = sentmessage.concat(" ");
             sentmessage = sentmessage.concat(COOKIE);
-            SendIt (sentmessage);
+            SendIt(sentmessage);
             success = true;
          } else if (sentmessage.trim().equals("QUIT")) {
             SendIt(sentmessage);
@@ -187,7 +210,7 @@ public class MessageParser {
       return success;
    }
 
-   public void SendIt (String message) throws IOException {
+   public void SendIt(String message) throws IOException {
       try {        
 	 System.out.println("MessageParser [SendIt]: sent:\n\t"+message);
          out.println(message);
@@ -300,6 +323,7 @@ public class MessageParser {
    }
 
    public void GetIdentification() {
+   
    }                                      
       
 
@@ -337,4 +361,27 @@ public class MessageParser {
    public boolean IsMonitorAuthentic(String MonitorMesg) {
       return false;
    }
-}
+   
+   
+public boolean Identification() {
+   boolean gotIdentity = false;
+	try{
+	        Scanner myobj = new Scanner(new File(IDENT+".dat"));
+	         String[] pass = myobj.nextLine().split(" ",-1);
+	         myobj.close();
+	         if(pass.length == 2){
+	            PASSWORD = pass[1];
+	            COOKIE=PASSWORD;
+	            System.out.println("IDENT-"+IDENT+" Password- "+pass[1]);
+	            gotIdentity = true;
+	         }else{ 
+	            System.out.println("identity doesn't exist");
+	            System.exit(1);
+	         }
+	      }catch(FileNotFoundException e){
+	         System.err.println("File not found"+e);
+	         System.exit(1);
+	      }
+	      return gotIdentity;
+	   }
+   }
