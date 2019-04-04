@@ -1,8 +1,11 @@
+package homework;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.lang.*;
 import java.awt.*;
+
 
 public class ActiveClient extends MessageParser implements Runnable {
 
@@ -99,4 +102,60 @@ public class ActiveClient extends MessageParser implements Runnable {
          }
       }
    }
-}
+
+   private void setIdentification(String rawMonitorResponse) throws IOException{
+	      String iddir = IDENT+".dat";
+	      File identFile = new File(iddir);
+	      if (!identExists(identFile)){
+	         System.out.println("File creation error");
+	         System.exit(1);
+	      }
+	      String password = "PASSWORD abcdef12 ";
+	      //Scanner obj= new Scanner(System.in);
+	   	  //System.out.println("Password required");
+	   	  //password = obj.nextLine();
+		  //obj.close();
+	      try {
+	    	  BufferedWriter out= new BufferedWriter(new FileWriter(iddir));
+	    	  out.write(IDENT+" "+password);
+	    	  out.close();
+		} catch (IOException e) {
+			System.out.println("file writing exceptions");
+			System.exit(1);
+		}
+	      
+	   }
+
+	   private boolean identExists(File file) throws IOException{
+	      return (file.exists()) ? file.exists() : file.createNewFile();
+	   }
+
+	   public boolean Login() { 
+	      boolean success = false; 
+	      
+	      String monitormessage = ""; 
+	      String[] credentials = new String[]{"IDENT", "PASSWORD", "HOST_PORT"};
+	      int i = 0;
+	      try { 
+	         for(String s : credentials){
+	            if(Execute(s)){
+	            	monitormessage = GetMonitorMessage();
+	               System.out.println(monitormessage);
+	               try{
+	                  if(i == 1) setIdentification(monitormessage);
+	               }catch(IOException e){
+	                  System.out.println("set identification error "+e);
+	                  System.exit(1);
+	               }
+	               if(i++ == (credentials.length-1)) success = true;
+	            }
+	         }         
+	      } catch (NullPointerException n) {
+	          System.out.println("MessageParser [Login]: null pointer error "+
+	  			    "at login:\n\t"+n);
+	           success = false;
+	      }
+	           System.out.println("Success Value Login = "+success);
+	      return success;
+	   }
+	}
