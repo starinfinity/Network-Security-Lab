@@ -1,11 +1,14 @@
+package homework;
+
 import java.util.*;
 import java.io.*;
 import java.net.*;
 import java.lang.*;
 
-class Homework {
-   public static String MONITOR_NAME = "helios.ececs.uc.edu";
-   public static int MONITOR_PORT = 8180;
+public class Homework {
+   // public static String MONITOR_NAME = "helios.ececs.uc.edu";
+   public static String MONITOR_NAME = "localhost";
+   public static int MONITOR_PORT = 8150;
    public static int HOST_PORT = 20000 +(int)(Math.random()*1000);
    public static int MAX = 5;
    ActiveClient ac;
@@ -18,7 +21,7 @@ class Homework {
    }
 
    public static void main(String[] args) {
-      if (args.length != 3) {
+	   if (args.length != 3) {
          System.out.println("Usage: java Homework monitor monitor-port ident");
       } else {
          MONITOR_NAME = new String(args[0]);
