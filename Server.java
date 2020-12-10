@@ -1,4 +1,4 @@
-package homework;
+package nets;
 
 import java.io.*;
 import java.net.*;
